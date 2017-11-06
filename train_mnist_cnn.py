@@ -22,6 +22,8 @@ def main():
                         help='Directory to output the result')
     parser.add_argument('--resume', '-r', default='',
                         help='Resume the training from snapshot')
+    parser.add_argument('--dataset', '-d', default='USDJPY.txt',
+                        help='File for train FxAi')
     args = parser.parse_args()
 
     print('GPU: {}'.format(args.gpu))
@@ -43,12 +45,10 @@ def main():
     optimizer.setup(model)
 
     # Load the MNIST mini_cifar
-    train, test = chainer.datasets.get_mnist()
-
-
-    train_iter = chainer.iterators.SerialIterator(train, args.batchsize)
-    test_iter = chainer.iterators.SerialIterator(test, args.batchsize,
-                                                 repeat=False, shuffle=False)
+    train, test = chainer.datasets.split_dataset_random(
+        FxDataset(args.dataset),
+        100000
+    )
 
     # Set up a trainer
     updater = training.StandardUpdater(train_iter, optimizer, device=args.gpu)
@@ -63,7 +63,6 @@ def main():
     trainer.extend(extensions.snapshot(), trigger=(frequency, 'epoch'))
     trainer.extend(extensions.snapshot_object(model, 'model_{.updater.epoch}'),
                    trigger=(frequency, 'epoch'))
-
 
     trainer.extend(extensions.LogReport())
     if extensions.PlotReport.available():
