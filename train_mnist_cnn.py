@@ -11,7 +11,7 @@ from dataset import FxDataset
 
 def main():
     parser = argparse.ArgumentParser(description='Chainer example: MNIST')
-    parser.add_argument('--batchsize', '-b', type=int, default=100,
+    parser.add_argument('--batchsize', '-b', type=int, default=1000,
                         help='Number of images in each mini-batch')
     parser.add_argument('--epoch', '-e', type=int, default=20,
                         help='Number of sweeps over the mini_cifar to train')
@@ -35,7 +35,7 @@ def main():
     # Set up a neural network to train
     # Classifier reports softmax cross entropy loss and accuracy at every
     # iteration, which will be used by the PrintReport extension below.
-    model = MNIST_CNN(10)
+    model = MNIST_CNN(args.batchsize)
     if args.gpu >= 0:
         # Make a specified GPU current
         chainer.cuda.get_device_from_id(args.gpu).use()

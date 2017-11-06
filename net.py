@@ -33,31 +33,32 @@ class MLP(chainer.Chain):
 
 
 class MNIST_CNN(chainer.Chain):
-    def __init__(self, n_out):
+    def __init__(self, batch_size):
         super(MNIST_CNN, self).__init__()
         with self.init_scope():
             self.conv1 = L.Convolution2D(1, 5, (1, 5), stride=2)
             self.conv2 = L.Convolution2D(5, 10, (1, 5), stride=2)
-            self.l_out = L.Linear(10*1*357, 1)#n_out)
+            self.l_out = L.Linear(10*1*357, 1)
+            self.batch_size = batch_size
 
     def __call__(self, x, t):
-        #print("x.shape:", x.shape)
-        x = x.reshape(1, 1, 1, 1440)
-        #print("x.reshape:", x.shape)
+        # print("x.shape:", x.shape)
+        x = x.reshape(self.batch_size, 1, 1, 1440)
+        # print("x.reshape:", x.shape)
         h = F.relu(self.conv1(x))
-        #print("x.reshape:", x.shape)
-        #print("h.shape:", h.shape)
-        #h = h.reshape(1, 5, 14, 14))
-        #print("h.reshape:", h.shape)
+        # print("x.reshape:", x.shape)
+        # print("h.shape:", h.shape)
+        # h = h.reshape(1, 5, 14, 14))
+        # print("h.reshape:", h.shape)
         h = F.relu(self.conv2(h))
-        #print("h.shape2:", h.shape)
+        # print("h.shape2:", h.shape)
         h = self.l_out(h)
-        #print("h.shape3:", h.shape)
+        # print("h.shape3:", h.shape)
 
         loss = F.mean_squared_error(h, t)
-        #accuracy = F.accuracy(h, t)
+        # accuracy = F.accuracy(h, t)
         chainer.report({'loss': loss}, self)
-        #chainer.report({'accuracy': accuracy}, self)
+        # chainer.report({'accuracy': accuracy}, self)
 
         if chainer.config.train:
             return loss
