@@ -31,12 +31,9 @@ class FxDataset:
             raise IndexError
         index = random.sample(range(len(self)), n + m)
         data = []
-        ans = []
         print("sampling...")
         for i in index:
-            data.append(self._rates[i:i + self.unit_length])
-            ans.append(self._rates[i + self.unit_length])
+            data.append(self._rates[i:i + self.unit_length + 1])
         np.array(data, dtype=np.float32)
-        np.array(ans, dtype=np.float32)
         print("done.")
-        return data, ans
+        return train[:n], test[n:]
