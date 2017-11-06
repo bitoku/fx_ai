@@ -38,14 +38,21 @@ class MNIST_CNN(chainer.Chain):
         with self.init_scope():
             self.conv1 = L.Convolution2D(1, 5, (1, 3))
             self.conv2 = L.Convolution2D(5, 10, (1, 3))
-            self.l_out = L.Linear(10 * 7 * 7, n_out)
+            self.l_out = L.Linear(None, n_out)
 
     def __call__(self, x, t):
         print("x.shape:", x.shape)
+        x = x.reshape(1, 1, 1, 1440)
+        print("x.reshape:", x.shape)
         h = F.relu(self.conv1(x))
+        #print("x.reshape:", x.shape)
         print("h.shape:", h.shape)
+        #h = h.reshape(1, 5, 14, 14))
+        #print("h.reshape:", h.shape)
         h = F.relu(self.conv2(h))
+        print("h.shape2:", h.shape)
         h = self.l_out(h)
+        print("h.shape3:", h.shape)
 
         loss = F.softmax_cross_entropy(h, t)
         accuracy = F.accuracy(h, t)
