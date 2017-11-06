@@ -12,7 +12,7 @@ class FxDataset:
         with open(train_file) as file:
             raw_rates = file.readlines()
             raw_rates.pop(0)
-            self._rates = [x.split(",")[6] for x in raw_rates]
+            self._rates = [float(x.split(",")[6]) for x in raw_rates]
             self._first_date = raw_rates[0].split(",")[1]
             self._first_time = raw_rates[0].split(",")[1]
         sys.stdout.write(" done.\n")
