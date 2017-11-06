@@ -7,6 +7,7 @@ import chainer
 from chainer import training
 from chainer.training import extensions
 from net import MNIST_CNN
+from dataset import FxDataset
 
 def main():
     parser = argparse.ArgumentParser(description='Chainer example: MNIST')
