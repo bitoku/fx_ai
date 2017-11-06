@@ -72,14 +72,10 @@ def main():
         trainer.extend(
             extensions.PlotReport(['main/loss', 'validation/main/loss'],
                                   'epoch', file_name='loss.png'))
-        trainer.extend(
-            extensions.PlotReport(
-                ['main/accuracy', 'validation/main/accuracy'],
-                'epoch', file_name='accuracy.png'))
 
     trainer.extend(extensions.PrintReport(
         ['epoch', 'main/loss', 'validation/main/loss',
-         'main/accuracy', 'validation/main/accuracy', 'elapsed_time']))
+         'elapsed_time']))
 
     trainer.extend(extensions.ProgressBar())
 
