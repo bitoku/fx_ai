@@ -36,17 +36,17 @@ class MNIST_CNN(chainer.Chain):
     def __init__(self, n_out):
         super(MNIST_CNN, self).__init__()
         with self.init_scope():
-            self.conv1 = L.Convolution2D(1, 5, 5, stride=2, pad=2)
-            self.conv2 = L.Convolution2D(5, 10, 5, stride=2, pad=2)
+            self.conv1 = L.Convolution2D(1, 5, (1, 3))
+            self.conv2 = L.Convolution2D(5, 10, (1, 3))
             self.l_out = L.Linear(10 * 7 * 7, n_out)
 
     def __call__(self, x, t):
-        #print("x.shape:", x.shape)
-        x = x.reshape(1, 1, 28, 28)
+        print("x.shape:", x.shape)
+        #x = x.reshape(1, 1, 1440, 1)
         #print("x.reshape:", x.shape)
         h = F.relu(self.conv1(x))
         #print("x.reshape:", x.shape)
-        #print("h.shape:", h.shape)
+        print("h.shape:", h.shape)
         #h = h.reshape(1, 5, 14, 14))
         #print("h.reshape:", h.shape)
         h = F.relu(self.conv2(h))
