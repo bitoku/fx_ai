@@ -45,10 +45,12 @@ def main():
     optimizer.setup(model)
 
     # Load the MNIST mini_cifar
-    train, test = chainer.datasets.split_dataset_random(
-        FxDataset(args.dataset),
-        100000
-    )
+    datasets = FxDataset(args.dataset)
+    train, test = datasets.split_random(100000, 10000)
+
+    train_iter = chainer.iterators.SerialIterator(train, args.batchsize)
+    test_iter = chainer.iterators.SerialIterator(test, args.batchsize,
+                                                 repeat=False, shuffle=False)
 
     # Set up a trainer
     updater = training.StandardUpdater(train_iter, optimizer, device=args.gpu)
