@@ -42,15 +42,9 @@ class MNIST_CNN(chainer.Chain):
 
     def __call__(self, x, t):
         print("x.shape:", x.shape)
-        #x = x.reshape(1, 1, 1440, 1)
-        #print("x.reshape:", x.shape)
         h = F.relu(self.conv1(x))
-        #print("x.reshape:", x.shape)
         print("h.shape:", h.shape)
-        #h = h.reshape(1, 5, 14, 14))
-        #print("h.reshape:", h.shape)
         h = F.relu(self.conv2(h))
-        #print("h.reshape:", h.shape)
         h = self.l_out(h)
 
         loss = F.softmax_cross_entropy(h, t)
