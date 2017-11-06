@@ -36,4 +36,4 @@ class FxDataset:
             data.append(self._rates[i:i + self.unit_length + 1])
         np.array(data, dtype=np.float32)
         print("done.")
-        return train[:n], test[n:]
+        return data[:n], data[n:]
