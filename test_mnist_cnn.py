@@ -14,28 +14,30 @@ from net import MNIST_CNN
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Chainer example: MNIST')
+    parser = argparse.ArgumentParser(description='Chainer Fx')
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
-    parser.add_argument('--image', '-i', type=str, default="",
-                        help='pass to input image')
-    parser.add_argument('--model', '-m', default='my_mnist.model',
+    parser.add_argument('--input', '-i', type=str, default="USDJPY.txt",
+                        help='use input_file')
+    parser.add_argument('--dataset', '-d', type=str, default="USDJPY.txt",
+                        help='use dataset')
+    parser.add_argument('--model', '-m', default='model_50',
                         help='path to the training model')
-    parser.add_argument('--unit', '-u', type=int, default=1000,
-                        help='Number of units')
     args = parser.parse_args()
-    model = MLP(args.unit,10)
+    model = FX()
     if args.gpu >= 0:
         model.to_gpu(chainer.cuda.get_device_from_id(args.gpu).use())
     serializers.load_npz(args.model, model)
+    with open(args.data) as data:
+        result = model.predict(img_array)
+        print("predict:", model.xp.argmax(result.data))
+    '''
     try:
         img = Image.open(args.image).convert("L").resize((28,28))
     except :
         print("invalid input")
         return
-    img_array = model.xp.asarray(img,dtype=model.xp.float32).reshape(1,784)
-    result = model.predict(img_array)
-    print("predict:", model.xp.argmax(result.data))
+    '''
 
 if __name__ == '__main__':
     main()
