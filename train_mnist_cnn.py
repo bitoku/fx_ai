@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 import chainer
 from chainer import training
 from chainer.training import extensions
-from net import MNIST_CNN
+from net import FX
 from dataset import FxDataset
 
 def main():

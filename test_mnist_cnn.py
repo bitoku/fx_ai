@@ -10,7 +10,7 @@ import chainer
 from PIL import Image
 from chainer import serializers
 
-from net import MNIST_CNN
+from net import FX
 
 
 def main():
@@ -29,6 +29,7 @@ def main():
         model.to_gpu(chainer.cuda.get_device_from_id(args.gpu).use())
     serializers.load_npz(args.model, model)
     with open(args.data) as data:
+        data
         result = model.predict(img_array)
         print("predict:", model.xp.argmax(result.data))
     '''
