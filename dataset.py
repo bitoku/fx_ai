@@ -34,6 +34,6 @@ class FxDataset:
         print("sampling...")
         for i in index:
             data.append((np.array(self._rates[i:i + self.unit_length], dtype=np.float32),
-                                  self._rates[i + self.unit_length + 1]))
+                                  float(self._rates[i + self.unit_length + 1])))
         print("done.")
         return data[:n], data[n:]
