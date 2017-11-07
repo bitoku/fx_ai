@@ -37,14 +37,19 @@ def main():
         raw_rates.pop(0)
         rates = raw_rates[args.number:args.number + 1440]
         rates = [float(x.split(",")[6]) for x in rates]
+        rates_array = model.xp.array(rates, dtype=model.xp.float32)
+        result = model.predict(rates_array)
+        """
         for i in range(60 * 24):
             rates_array = model.xp.array(rates, dtype=model.xp.float32)
             result = model.predict(rates_array)
             p = model.xp.amax(result.data)
-            print("predict:", p)
+            print("predict:", p, raw_rates[args.number + 1440 + i].split(",")[6])
             rates.pop(0)
             rates.append(p)
-        plt.plot(rates)
+        """
+        print(result.data[0])
+        plt.plot(result.data[0])
         rates = raw_rates[args.number + 1440: args.number + 2880]
         rates = [float(x.split(",")[6]) for x in rates]
         plt.plot(rates)

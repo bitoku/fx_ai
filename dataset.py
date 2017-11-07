@@ -57,7 +57,7 @@ class FxDataset:
 
     def __len__(self):
         """ データセットの数を返す関数 """
-        return len(self._rates) - self.unit_length - 1
+        return len(self._rates) - self.unit_length * 2 - 1
 
     def split_random(self, n=None, m=None):
         """
@@ -77,7 +77,7 @@ class FxDataset:
         for k in range(n + m):
             i = index[k]
             data.append((np.array(self._rates[i:i + self.unit_length], dtype=np.float32),
-                         np.array([self._rates[i + self.unit_length + 1]], dtype=np.float32)))
+                         np.array(self._rates[i + self.unit_length:i + self.unit_length * 2], dtype=np.float32)))
             if k % 1000 == 0:
                 progress = k / (n + m)
                 # print((progress, k, n + m))
@@ -85,6 +85,7 @@ class FxDataset:
                 sys.stdout.flush()
         sys.stdout.write("\r[" + ("#" * 40) + "]\n")
         sys.stdout.flush()
+
 
         print("done.")
         return data[:n], data[n:]
