@@ -17,6 +17,19 @@ class FX(chainer.Chain):
             self.batch_size = batch_size
 
     def __call__(self, x, t):
+        h = self.predict(x)
+
+        loss = F.mean_squared_error(h, t)
+        # accuracy = F.accuracy(h, t)
+        chainer.report({'loss': loss}, self)
+        # chainer.report({'accuracy': accuracy}, self)
+
+        if chainer.config.train:
+            return loss
+        else:
+            return h
+
+    def predict(self, x):
         # print("x.shape:", x.shape)
         x = x.reshape(self.batch_size, 1, 1, 1440)
         # print("x.reshape:", x.shape)
@@ -33,16 +46,8 @@ class FX(chainer.Chain):
         #h = self.bnorm3(h)
         h = self.l_out(h)
         # print("h.shape3:", h.shape)
+        return h
 
-        loss = F.mean_squared_error(h, t)
-        # accuracy = F.accuracy(h, t)
-        chainer.report({'loss': loss}, self)
-        # chainer.report({'accuracy': accuracy}, self)
-
-        if chainer.config.train:
-            return loss
-        else:
-            return h
 
 
 class Cifar_CNN(chainer.Chain):
