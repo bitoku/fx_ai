@@ -5,7 +5,7 @@ from chainer import functions as F
 
 class FX(chainer.Chain):
     def __init__(self, batch_size):
-        super(MNIST_CNN, self).__init__()
+        super(FX, self).__init__()
         with self.init_scope():
             self.conv1 = L.Convolution2D(1, 5, (1, 3))
             self.conv2 = L.Convolution2D(5, 10, (1, 3))
