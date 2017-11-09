@@ -36,7 +36,8 @@ def main():
     # Classifier reports softmax cross entropy loss and accuracy at every
     # iteration, which will be used by the PrintReport extension below.
     input_size = 24 * 60
-    output_size = 60
+    output_size = 2
+    time_length = 60 * 24
     model = FX(args.batchsize, input_size, output_size)
     if args.gpu >= 0:
         # Make a specified GPU current
@@ -44,11 +45,11 @@ def main():
         model.to_gpu()  # Copy the model to the GPU
 
     # Setup an optimizer
-    optimizer = chainer.optimizers.Adam()
+    optimizer = chainer.optimizers.AdaDelta()
     optimizer.setup(model)
 
     # Load the MNIST mini_cifar
-    datasets = FxDataset(args.dataset, input_size, output_size)
+    datasets = FxDataset(args.dataset, input_size, output_size, time_length)
     train, test = datasets.split_random(100000, 10000)
 
     train_iter = chainer.iterators.SerialIterator(train, args.batchsize)
@@ -72,11 +73,11 @@ def main():
     trainer.extend(extensions.LogReport())
     if extensions.PlotReport.available():
         trainer.extend(
-            extensions.PlotReport(['main/loss', 'validation/main/loss'],
+            extensions.PlotReport(['main/loss', 'validation/main/loss', 'main/accuracy', 'validation/main/accuracy'],
                                   'epoch', file_name='loss.png'))
 
     trainer.extend(extensions.PrintReport(
-        ['epoch', 'main/loss', 'validation/main/loss',
+        ['epoch', 'main/loss', 'validation/main/loss', 'main/accuracy', 'validation/main/accuracy',
          'elapsed_time']))
 
     trainer.extend(extensions.ProgressBar())

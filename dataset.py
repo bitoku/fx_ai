@@ -5,9 +5,11 @@ import sys
 import os.path
 
 class FxDataset:
-    def __init__(self, train_file, input_size, output_size):
+    def __init__(self, train_file, input_size, output_size, time_length):
         self.input_size = input_size
         self.output_size = output_size
+        self.time_length = time_length
+        """
         if not os.path.exists(train_file + ".norm"):
             sys.stdout.write("loading data...")
             sys.stdout.flush()
@@ -40,11 +42,21 @@ class FxDataset:
                 self.first_time = raw_diff[0].split(",")[1]
                 raw_diff.pop(0)
                 self._diff = [float(x) for x in raw_diff]
+        """
+        sys.stdout.write("loading data...")
+        sys.stdout.flush()
+        with open(train_file) as file:
+            raw_rates = file.readlines()
+            self.first_date = raw_rates[0].split(",")[1]
+            self.first_time = raw_rates[0].split(",")[2]
+            raw_rates.pop(0)
+            self._rates = [float(x.split(",")[6]) for x in raw_rates]
+            sys.stdout.write(" done.\n")
 
 
     def __len__(self):
         """ データセットの数を返す関数 """
-        return len(self._diff) - self.input_size - self.output_size - 1
+        return len(self._rates) - self.input_size - self.time_length - 1
 
     def split_random(self, n=None, m=None):
         """
@@ -63,9 +75,9 @@ class FxDataset:
         print("sampling...")
         for k in range(n + m):
             i = index[k]
-            data.append((np.array(self._diff[i:i + self.input_size], dtype=np.float32),
-                         np.array(self._diff[i + self.input_size:i + self.input_size + self.output_size],
-                                  dtype=np.float32)))
+            up = 1 if self._rates[i + self.input_size] > self._rates[i + self.input_size + self.time_length] else 0
+            data.append((np.array(self._rates[i:i + self.input_size], dtype=np.float32),
+                         np.array(up, dtype=np.int32)))
             if k % 1000 == 0:
                 progress = k / (n + m)
                 sys.stdout.write("\r[" + ("#" * int(progress * 40)) + (" " * (40 - int(progress * 40)) + "]"))
