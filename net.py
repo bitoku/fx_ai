@@ -7,6 +7,7 @@ class FX(chainer.Chain):
     def __init__(self, batch_size, input_size, output_size):
         super(FX, self).__init__()
         with self.init_scope():
+            self.batch_size = batch_size
             self.input_size = input_size
             self.output_size = output_size
             self.conv1 = L.Convolution2D(1, 5, (1, 100), stride=1)
@@ -18,7 +19,7 @@ class FX(chainer.Chain):
             self.bnorm1 = L.BatchNormalization(5)
             self.bnorm2 = L.BatchNormalization(10)
             self.bnorm3 = L.BatchNormalization(20)
-            self.batch_size = batch_size
+
 
     def __call__(self, x, t):
         h = self.predict(x)
