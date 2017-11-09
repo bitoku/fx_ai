@@ -54,7 +54,7 @@ def main():
         pre_ans = rates[-1]
         rates = raw_rates[args.number: args.number + input_size + output_size + 1]
         rates = [float(x.split(",")[6]) for x in rates]
-        post_ans = rates[int(len(rates)/2)]
+        post_ans = rates[-1]
         plt.plot(rates)
         for i, d in enumerate(result.data[0]):
             rates[i + input_size + 1] = rates[i + input_size] + d
@@ -62,15 +62,18 @@ def main():
         plt.plot(rates)
         plt.savefig("predict.png")
         if pre_ans <= post_ans:
-            if pre_ans <= rates[int(len(rates)/2.0)]:
-                print('Correct.')
+            if pre_ans <= rates[-1]:
+                print('Correct(over).')
             else:
-                print('Incorrect.')
+                print('Incorrect(over).')
         else:
-            if pre_ans > rates[int(len(rates)/2.0)]:
-                print('Correct.')
+            if pre_ans > rates[-1]:
+                print('Correct(under).')
             else:
-                print('Incorrect.')
+                print('Incorrect(under).')
+        #print(pre_ans)
+        #print(post_ans)
+        #print(rates[-1])
     '''
     try:
         img = Image.open(args.image).convert("L").resize((28,28))
