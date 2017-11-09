@@ -35,7 +35,9 @@ def main():
     # Set up a neural network to train
     # Classifier reports softmax cross entropy loss and accuracy at every
     # iteration, which will be used by the PrintReport extension below.
-    model = FX(args.batchsize)
+    input_size = 24 * 60
+    output_size = 60
+    model = FX(args.batchsize, input_size, output_size)
     if args.gpu >= 0:
         # Make a specified GPU current
         chainer.cuda.get_device_from_id(args.gpu).use()
@@ -46,7 +48,7 @@ def main():
     optimizer.setup(model)
 
     # Load the MNIST mini_cifar
-    datasets = FxDataset(args.dataset)
+    datasets = FxDataset(args.dataset, input_size, output_size)
     train, test = datasets.split_random(100000, 10000)
 
     train_iter = chainer.iterators.SerialIterator(train, args.batchsize)

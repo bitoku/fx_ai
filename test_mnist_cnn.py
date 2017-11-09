@@ -23,30 +23,40 @@ def main():
                         help='use input_file')
     parser.add_argument('--number', '-n', type=int, default=1,
                         help='use number of line')
-    parser.add_argument('--dataset', '-d', type=str, default="USDJPY.txt",
+    parser.add_argument('--dataset', '-d', type=str, default="USDJPY.txt.norm",
                         help='use dataset')
-    parser.add_argument('--model', '-m', default='model_50',
+    parser.add_argument('--model', '-m', default='model_20',
                         help='path to the training model')
     args = parser.parse_args()
-    model = FX(1)
+    input_size = 60 * 24
+    output_size = 60
+    model = FX(1, input_size, output_size)
     if args.gpu >= 0:
         model.to_gpu(chainer.cuda.get_device_from_id(args.gpu).use())
     serializers.load_npz(args.model, model)
     with open(args.input) as data:
         raw_rates = data.readlines()
         raw_rates.pop(0)
-        rates = raw_rates[args.number:args.number + 1440]
+        rates = raw_rates[args.number:args.number + input_size + 1]
         rates = [float(x.split(",")[6]) for x in rates]
-        for i in range(60 * 24):
-            rates_array = model.xp.array(rates, dtype=model.xp.float32)
-            result = model.predict(rates_array)
+        diff = [rates[i+1] - rates[i] for i in range(len(rates) - 1)]
+        diff_array = model.xp.array(diff, dtype=model.xp.float32)
+        result = model.predict(diff_array)
+        """
+        for i in range(input_size):
+            diff_array = model.xp.array(diff, dtype=model.xp.float32)
+            result = model.predict(diff_array)
             p = model.xp.amax(result.data)
             print("predict:", p)
-            rates.pop(0)
-            rates.append(p)
-        plt.plot(rates)
-        rates = raw_rates[args.number + 1440: args.number + 2880]
+            diff.pop(0)
+            diff.append(p)
+        """
+        rates = raw_rates[args.number: args.number + input_size + output_size + 1]
         rates = [float(x.split(",")[6]) for x in rates]
+        plt.plot(rates)
+        for i, d in enumerate(result.data[0]):
+            rates[i + input_size + 1] = rates[i + input_size] + d
+        print(result.data[0])
         plt.plot(rates)
         plt.savefig("predict.png")
     '''
