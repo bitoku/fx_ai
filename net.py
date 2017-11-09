@@ -7,12 +7,14 @@ class FX(chainer.Chain):
     def __init__(self, batch_size, input_size, output_size):
         super(FX, self).__init__()
         with self.init_scope():
+            self.input_size = input_size
+            self.output_size = output_size
             self.conv1 = L.Convolution2D(1, 5, (1, 100), stride=1)
             self.conv2 = L.Convolution2D(5, 10, (1, 50), stride=1)
             self.conv3 = L.Convolution2D(10, 20, (1, 10), stride=1)
             self.conv4 = L.Convolution2D(20, 30, (1, 3), stride=3)
             self.fc1 = L.Linear(None, 100)
-            self.fc2 = L.Linear(None, output_size)
+            self.fc2 = L.Linear(None, self.output_size)
             self.bnorm1 = L.BatchNormalization(5)
             self.bnorm2 = L.BatchNormalization(10)
             self.bnorm3 = L.BatchNormalization(20)
