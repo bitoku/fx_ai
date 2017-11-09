@@ -1,6 +1,11 @@
 result/
 .Idea/
 USDJPY.txt
+AUDJPY.txt
+GBPJPY.txt
+CHFJPY.txt
+NZDJPY.txt
+EURJPY.txt
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

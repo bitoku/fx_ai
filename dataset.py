@@ -21,7 +21,7 @@ class FxDataset:
 
                 sys.stdout.write("normalizing data...")
                 sys.stdout.flush()
-                self._diff = [rates[i+1] - rates[i] for i in range(len(rates)-1)]
+                self._diff = [(rates[i+1] - rates[i])*10 for i in range(len(rates)-1)]
                 sys.stdout.write(" done.\n")
                 sys.stdout.flush()
 

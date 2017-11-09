@@ -28,8 +28,8 @@ def main():
     parser.add_argument('--model', '-m', default='model_20',
                         help='path to the training model')
     args = parser.parse_args()
-    input_size = 60 * 24
-    output_size = 60
+    input_size = 60 * 24 * 1
+    output_size = 60 * 24 * 1
     model = FX(1, input_size, output_size)
     if args.gpu >= 0:
         model.to_gpu(chainer.cuda.get_device_from_id(args.gpu).use())
@@ -39,7 +39,7 @@ def main():
         raw_rates.pop(0)
         rates = raw_rates[args.number:args.number + input_size + 1]
         rates = [float(x.split(",")[6]) for x in rates]
-        diff = [rates[i+1] - rates[i] for i in range(len(rates) - 1)]
+        diff = [(rates[i+1] - rates[i])*100 for i in range(len(rates) - 1)]
         diff_array = model.xp.array(diff, dtype=model.xp.float32)
         result = model.predict(diff_array)
         """
@@ -51,14 +51,26 @@ def main():
             diff.pop(0)
             diff.append(p)
         """
+        pre_ans = rates[-1]
         rates = raw_rates[args.number: args.number + input_size + output_size + 1]
         rates = [float(x.split(",")[6]) for x in rates]
+        post_ans = rates[-1]
         plt.plot(rates)
         for i, d in enumerate(result.data[0]):
             rates[i + input_size + 1] = rates[i + input_size] + d
         print(result.data[0])
         plt.plot(rates)
         plt.savefig("predict.png")
+        if pre_ans <= post_ans:
+            if pre_ans <= rates[-1]:
+                print('Correct.')
+            else:
+                print('Incorrect.')
+        else:
+            if pre_ans > rates[-1]:
+                print('Correct.')
+            else:
+                print('Incorrect.')
     '''
     try:
         img = Image.open(args.image).convert("L").resize((28,28))
