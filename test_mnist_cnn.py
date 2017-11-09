@@ -28,8 +28,8 @@ def main():
     parser.add_argument('--model', '-m', default='model_20',
                         help='path to the training model')
     args = parser.parse_args()
-    input_size = 60 * 24
-    output_size = 60
+    input_size = 60 * 24 * 1
+    output_size = 60 * 24 * 1
     model = FX(1, input_size, output_size)
     if args.gpu >= 0:
         model.to_gpu(chainer.cuda.get_device_from_id(args.gpu).use())
@@ -39,7 +39,7 @@ def main():
         raw_rates.pop(0)
         rates = raw_rates[args.number:args.number + input_size + 1]
         rates = [float(x.split(",")[6]) for x in rates]
-        diff = [rates[i+1] - rates[i] for i in range(len(rates) - 1)]
+        diff = [(rates[i+1] - rates[i])*10 for i in range(len(rates) - 1)]
         diff_array = model.xp.array(diff, dtype=model.xp.float32)
         result = model.predict(diff_array)
         """

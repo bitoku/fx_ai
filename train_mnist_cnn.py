@@ -35,8 +35,8 @@ def main():
     # Set up a neural network to train
     # Classifier reports softmax cross entropy loss and accuracy at every
     # iteration, which will be used by the PrintReport extension below.
-    input_size = 24 * 60
-    output_size = 60
+    input_size = 60 * 24 * 1
+    output_size = 60 * 24 * 1
     model = FX(args.batchsize, input_size, output_size)
     if args.gpu >= 0:
         # Make a specified GPU current
