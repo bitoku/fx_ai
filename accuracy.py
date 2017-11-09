@@ -14,6 +14,7 @@ from chainer import serializers
 from net import FX
 from dataset import FxDataset
 
+import random
 
 def main():
     parser = argparse.ArgumentParser(description='Chainer Fx')
@@ -21,11 +22,9 @@ def main():
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--input', '-i', type=str, default="USDJPY.txt",
                         help='use input_file')
-    parser.add_argument('--number', '-n', type=int, default=1,
-                        help='use number of line')
     parser.add_argument('--dataset', '-d', type=str, default="USDJPY.txt.norm",
                         help='use dataset')
-    parser.add_argument('--model', '-m', default='model_20',
+    parser.add_argument('--model', '-m', default='result/model_20',
                         help='path to the training model')
     args = parser.parse_args()
     input_size = 60 * 24 * 1
@@ -37,30 +36,38 @@ def main():
     with open(args.input) as data:
         raw_rates = data.readlines()
         raw_rates.pop(0)
-        rates = raw_rates[args.number:args.number + input_size + 1]
-        rates = [float(x.split(",")[6]) for x in rates]
-        diff = [(rates[i+1] - rates[i])*100 for i in range(len(rates) - 1)]
-        diff_array = model.xp.array(diff, dtype=model.xp.float32)
-        result = model.predict(diff_array)
-        """
-        for i in range(input_size):
+        n = 100
+        cnt = 0
+        for k in range(n):
+            num = random.randint(1, 200000)
+            rates = raw_rates[num:num + input_size + 1]
+            rates = [float(x.split(",")[6]) for x in rates]
+            diff = [(rates[i+1] - rates[i])*100 for i in range(len(rates) - 1)]
             diff_array = model.xp.array(diff, dtype=model.xp.float32)
             result = model.predict(diff_array)
-            p = model.xp.amax(result.data)
-            print("predict:", p)
-            diff.pop(0)
-            diff.append(p)
-        """
-        pre_ans = rates[-1]
-        rates = raw_rates[args.number: args.number + input_size + output_size + 1]
-        rates = [float(x.split(",")[6]) for x in rates]
-        post_ans = rates[-1]
-        plt.plot(rates)
-        for i, d in enumerate(result.data[0]):
-            rates[i + input_size + 1] = rates[i + input_size] + d
-        print(result.data[0])
-        plt.plot(rates)
-        plt.savefig("predict.png")
+            """
+            for i in range(input_size):
+                diff_array = model.xp.array(diff, dtype=model.xp.float32)
+                result = model.predict(diff_array)
+                p = model.xp.amax(result.data)
+                print("predict:", p)
+                diff.pop(0)
+                diff.append(p)
+            """
+            rates = raw_rates[num: num + input_size + output_size + 1]
+            rates = [float(x.split(",")[6]) for x in rates]
+            pre_ans = 1 if rates[-1] > rates[input_size + 1] else 0
+            plt.plot(rates)
+            for i, d in enumerate(result.data[0]):
+                rates[i + input_size + 1] = rates[i + input_size] + d
+            post_ans = 1 if rates[-1] > rates[input_size + 1] else 0
+            plt.plot(rates)
+            plt.savefig("predict.png")
+            if pre_ans == post_ans:
+                cnt += 1
+            print(k)
+    print(cnt/n)
+
     '''
     try:
         img = Image.open(args.image).convert("L").resize((28,28))
