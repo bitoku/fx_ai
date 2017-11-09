@@ -7,13 +7,12 @@ class FX(chainer.Chain):
     def __init__(self, batch_size, input_size, output_size):
         super(FX, self).__init__()
         with self.init_scope():
-            self.input_size = input_size
-            self.output_size = output_size
-            self.conv1 = L.Convolution2D(1, 32, (1, 200), stride=1, pad=(1, 100))
-            self.conv2 = L.Convolution2D(32, 64, (1, 50), stride=1, pad=(1, 30))
-            self.conv3 = L.Convolution2D(64, 128, (1, 10), stride=1)
-            self.fc1 = L.Linear(None, 200)
-            self.fc2 = L.Linear(None, output_size)
+            self.conv1 = L.Convolution2D(1, 5, (1, 100), stride=1)
+            self.conv2 = L.Convolution2D(5, 10, (1, 50), stride=1)
+            self.conv3 = L.Convolution2D(10, 20, (1, 10), stride=1)
+            self.conv4 = L.Convolution2D(20, 30, (1, 3), stride=3)
+            self.fc1 = L.Linear(None, 100)
+            self.fc2 = L.Linear(None, 1)
             self.bnorm1 = L.BatchNormalization(5)
             self.bnorm2 = L.BatchNormalization(10)
             self.bnorm3 = L.BatchNormalization(20)
@@ -42,14 +41,14 @@ class FX(chainer.Chain):
         #print("h.shape:", h.shape)
         # h = h.reshape(1, 5, 14, 14))
         # print("h.reshape:", h.shape)
-        h = F.relu(self.conv2(h))
+        h = F.max_pooling_2d(F.relu(self.conv2(h)), (1, 5))
         #h = self.bnorm2(h)
         #print("h.shape2:", h.shape)
         h = F.relu(self.conv3(h))
         #h = self.bnorm3(h)
         #print("h.shape3:", h.shape)
+        #h = F.relu(self.conv4(h))
         #print("h.shape4:", h.shape)
         #h = self.fc1(h)
-        h = self.fc1(h)
         h = self.fc2(h)
         return h
