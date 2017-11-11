@@ -3,6 +3,7 @@ import numpy as np
 import random
 import sys
 import os.path
+import datetime
 
 class FxDataset:
     def __init__(self, train_file, input_size, output_size, time_length):
@@ -42,16 +43,24 @@ class FxDataset:
                 self.first_time = raw_diff[0].split(",")[1]
                 raw_diff.pop(0)
                 self._diff = [float(x) for x in raw_diff]
-        """
+            """
+
         sys.stdout.write("loading data...")
         sys.stdout.flush()
         with open(train_file) as file:
             raw_rates = file.readlines()
-            self.first_date = raw_rates[0].split(",")[1]
-            self.first_time = raw_rates[0].split(",")[2]
             raw_rates.pop(0)
+            raw_rates = raw_rates[len(raw_rates)//2:]
+            for i, x in enumerate(raw_rates):
+                time = datetime.datetime.strptime(x.split(",")[2], '%H%M%S')
+                if time.hour == 23 and time.minute == 1 and time.second == 0:
+                    date = datetime.datetime.strptime(x.split(",")[1], '%Y%m%d')
+                    if date.weekday() == 6:
+                        raw_rates = raw_rates[i:]
+                        break
             self._rates = [float(x.split(",")[6]) for x in raw_rates]
             sys.stdout.write(" done.\n")
+
 
 
     def __len__(self):

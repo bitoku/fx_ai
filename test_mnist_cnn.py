@@ -23,7 +23,7 @@ def main():
                         help='use input_file')
     parser.add_argument('--number', '-n', type=int, default=1,
                         help='use number of line')
-    parser.add_argument('--dataset', '-d', type=str, default="USDJPY.txt.norm",
+    parser.add_argument('--dataset', '-d', type=str, default="USDJPY.txt",
                         help='use dataset')
     parser.add_argument('--model', '-m', default='model_20',
                         help='path to the training model')

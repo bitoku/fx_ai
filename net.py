@@ -9,16 +9,17 @@ class FX(chainer.Chain):
         with self.init_scope():
             self.input_size = input_size
             self.output_size = output_size
-            self.conv1 = L.Convolution2D(1, 5, (1, 100), stride=1)
-            self.conv2 = L.Convolution2D(5, 10, (1, 50), stride=1)
-            self.conv3 = L.Convolution2D(10, 20, (1, 10), stride=1)
-            self.conv4 = L.Convolution2D(20, 40, (1, 3), stride=3)
-            self.fc1 = L.Linear(None, 200)
-            self.fc2 = L.Linear(None, 50)
+            self.conv1 = L.Convolution2D(1, 64, (1, 30), stride=5)
+            self.conv2 = L.Convolution2D(64, 128, (1, 20), stride=3)
+            self.conv3 = L.Convolution2D(128, 256, (1, 10), stride=2)
+            self.conv4 = L.Convolution2D(256, 256, (1, 3), stride=1)
+            self.fc1 = L.Linear(None, 2000)
+            self.fc2 = L.Linear(None, 1000)
             self.out = L.Linear(None, self.output_size)
-            self.bnorm1 = L.BatchNormalization(5)
-            self.bnorm2 = L.BatchNormalization(10)
-            self.bnorm3 = L.BatchNormalization(20)
+            self.bnorm1 = L.BatchNormalization(64)
+            self.bnorm2 = L.BatchNormalization(128)
+            self.bnorm3 = L.BatchNormalization(256)
+            self.bnorm4 = L.BatchNormalization(256)
             self.batch_size = batch_size
 
     def __call__(self, x, t):
@@ -36,13 +37,13 @@ class FX(chainer.Chain):
 
     def predict(self, x):
         x = x.reshape(self.batch_size, 1, 1, self.input_size)
-        h = F.relu(self.conv1(x))
+        h = F.relu(self.bnorm1(self.conv1(x)))
         F.dropout(h, 0.2)
-        h = F.relu(self.conv2(h))
+        h = F.relu(self.bnorm2(self.conv2(h)))
         F.dropout(h, 0.2)
-        h = F.relu(self.conv3(h))
+        h = F.relu(self.bnorm3(self.conv3(h)))
         F.dropout(h, 0.2)
-        h = F.relu(self.conv4(h))
+        h = F.relu(self.bnorm4(self.conv4(h)))
         F.dropout(h, 0.2)
         h = self.fc1(h)
         h = self.fc2(h)

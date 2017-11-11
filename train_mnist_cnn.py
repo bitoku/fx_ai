@@ -23,7 +23,7 @@ def main():
                         help='Directory to output the result')
     parser.add_argument('--resume', '-r', default='',
                         help='Resume the training from snapshot')
-    parser.add_argument('--dataset', '-d', default='USDJPY.txt',
+    parser.add_argument('--dataset', '-d', default='rate_pair/USDJPY.txt',
                         help='File for train FxAi')
     args = parser.parse_args()
 
