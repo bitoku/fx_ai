@@ -25,6 +25,8 @@ def main():
                         help='Resume the training from snapshot')
     parser.add_argument('--dataset', '-d', default='USDJPY.txt',
                         help='File for train FxAi')
+    parser.add_argument('--hours', '-p', type=int, default=24,
+                        help='Predict hours')
     args = parser.parse_args()
 
     print('GPU: {}'.format(args.gpu))
@@ -36,7 +38,7 @@ def main():
     # Classifier reports softmax cross entropy loss and accuracy at every
     # iteration, which will be used by the PrintReport extension below.
     input_size = 60 * 24 * 1
-    output_size = 60 * 24 * 1
+    output_size = 60 * args.hours * 1
     model = FX(args.batchsize, input_size, output_size)
     if args.gpu >= 0:
         # Make a specified GPU current

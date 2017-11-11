@@ -26,9 +26,11 @@ def main():
                         help='use dataset')
     parser.add_argument('--model', '-m', default='result/model_20',
                         help='path to the training model')
+    parser.add_argument('--hours', '-p', type=int, default=24,
+                        help='Predict hours')
     args = parser.parse_args()
     input_size = 60 * 24 * 1
-    output_size = 60 * 24 * 1
+    output_size = 60 * args.hours * 1
     model = FX(1, input_size, output_size)
     if args.gpu >= 0:
         model.to_gpu(chainer.cuda.get_device_from_id(args.gpu).use())
@@ -36,13 +38,13 @@ def main():
     with open(args.input) as data:
         raw_rates = data.readlines()
         raw_rates.pop(0)
-        n = 100
+        n = 2000
         cnt = 0
         for k in range(n):
-            num = random.randint(1, 200000)
+            num = random.randint(1, 5000000)
             rates = raw_rates[num:num + input_size + 1]
             rates = [float(x.split(",")[6]) for x in rates]
-            diff = [(rates[i+1] - rates[i])*100 for i in range(len(rates) - 1)]
+            diff = [(rates[i+1] - rates[i])*10 for i in range(len(rates) - 1)]
             diff_array = model.xp.array(diff, dtype=model.xp.float32)
             result = model.predict(diff_array)
             """
