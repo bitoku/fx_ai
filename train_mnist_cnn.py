@@ -50,7 +50,7 @@ def main():
 
     # Load the MNIST mini_cifar
     datasets = FxDataset(args.dataset, input_size, output_size, time_length)
-    train, test = datasets.split_random(100000, 10000)
+    train, test = datasets.split_random(300000, 10000)
 
     train_iter = chainer.iterators.SerialIterator(train, args.batchsize)
     test_iter = chainer.iterators.SerialIterator(test, args.batchsize,

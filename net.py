@@ -36,6 +36,8 @@ class FX(chainer.Chain):
             return h
 
     def predict(self, x):
+        if x.size != self.batch_size * self.input_size:
+            print(x.shape)
         x = x.reshape(self.batch_size, 1, 1, self.input_size)
         h = F.relu(self.bnorm1(self.conv1(x)))
         F.dropout(h, 0.2)

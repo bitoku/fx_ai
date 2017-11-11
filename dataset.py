@@ -52,9 +52,9 @@ class FxDataset:
             raw_rates.pop(0)
             raw_rates = raw_rates[len(raw_rates)//2:]
             for i, x in enumerate(raw_rates):
-                time = datetime.datetime.strptime(x.split(",")[2], '%H%M%S')
+                time = datetime.time.strftime(x.split(",")[2], '%H%M%S')
                 if time.hour == 23 and time.minute == 1 and time.second == 0:
-                    date = datetime.datetime.strptime(x.split(",")[1], '%Y%m%d')
+                    date = datetime.date.strftime(x.split(",")[1], '%Y%m%d')
                     if date.weekday() == 6:
                         raw_rates = raw_rates[i:]
                         break
