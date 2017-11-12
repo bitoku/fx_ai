@@ -10,58 +10,25 @@ class FxDataset:
         self.input_size = input_size
         self.output_size = output_size
         self.time_length = time_length
-        """
-        if not os.path.exists(train_file + ".norm"):
-            sys.stdout.write("loading data...")
-            sys.stdout.flush()
-            with open(train_file) as file:
-                raw_rates = file.readlines()
-                self.first_date = raw_rates[0].split(",")[1]
-                self.first_time = raw_rates[0].split(",")[2]
-                raw_rates.pop(0)
-                rates = [float(x.split(",")[6]) for x in raw_rates]
-                sys.stdout.write(" done.\n")
-
-                sys.stdout.write("normalizing data...")
-                sys.stdout.flush()
-                self._diff = [rates[i+1] - rates[i] for i in range(len(rates)-1)]
-                sys.stdout.write(" done.\n")
-                sys.stdout.flush()
-
-            with open(train_file + ".norm", "w") as file:
-                sys.stdout.write("save normalized data...")
-                sys.stdout.flush()
-                file.write("{0},{1}".format(self.first_date, self.first_time))
-                for x in self._diff:
-                    file.write("\n{0}".format(x))
-                sys.stdout.write(" done.\n")
-                sys.stdout.flush()
-        else:
-            with open(train_file + ".norm") as file:
-                raw_diff = file.readlines()
-                self.first_date = raw_diff[0].split(",")[0]
-                self.first_time = raw_diff[0].split(",")[1]
-                raw_diff.pop(0)
-                self._diff = [float(x) for x in raw_diff]
-            """
+        self.n = 11
 
         sys.stdout.write("loading data...")
         sys.stdout.flush()
-        with open(train_file) as file:
-            raw_rates = file.readlines()
-            raw_rates.pop(0)
-            raw_rates = raw_rates[len(raw_rates)//2:]
-            for i, x in enumerate(raw_rates):
-                time = datetime.time.strftime(x.split(",")[2], '%H%M%S')
-                if time.hour == 23 and time.minute == 1 and time.second == 0:
-                    date = datetime.date.strftime(x.split(",")[1], '%Y%m%d')
-                    if date.weekday() == 6:
-                        raw_rates = raw_rates[i:]
-                        break
-            self._rates = [float(x.split(",")[6]) for x in raw_rates]
-            sys.stdout.write(" done.\n")
 
+        with open("diff_norm.txt") as diff_file:
+            raw_diffs = diff_file.readlines()
+        with open("rate.txt") as rate_file:
+            raw_rates = rate_file.readlines()
+        sys.stdout.write(" done.\n")
+        sys.stdout.flush()
 
+        sys.stdout.write("str to float...")
+        sys.stdout.flush()
+        self._diffs = [list(map(float, x.split(",")[1:self.n+1])) for x in raw_diffs]
+        self._rates = [list(map(float, x.split(",")[1:self.n+1])) for x in raw_rates]
+        self._time = [x.split(",")[0] for x in raw_diffs]
+        sys.stdout.write(" done.\n")
+        sys.stdout.flush()
 
     def __len__(self):
         """ データセットの数を返す関数 """
@@ -72,6 +39,7 @@ class FxDataset:
         n: number of train datasets
         m: number of test datasets
         """
+        print(len(self))
         if n is None:
             n = len(self)
         if m is None:
@@ -81,11 +49,16 @@ class FxDataset:
             raise IndexError
         index = random.sample(range(len(self)), n + m)
         data = []
+        print(len(self._rates))
+        print(len(self._rates[0]))
         print("sampling...")
         for k in range(n + m):
             i = index[k]
-            up = 1 if self._rates[i + self.input_size] > self._rates[i + self.input_size + self.time_length] else 0
-            data.append((np.array(self._rates[i:i + self.input_size], dtype=np.float32),
+            if self._rates[i + self.input_size][self.n-1] > self._rates[i + self.input_size + self.time_length][self.n-1]:
+                up = 1
+            else:
+                up = 0
+            data.append((np.array(self._diffs[i:i + self.input_size], dtype=np.float32),
                          np.array(up, dtype=np.int32)))
             if k % 1000 == 0:
                 progress = k / (n + m)

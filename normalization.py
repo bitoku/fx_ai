@@ -35,7 +35,16 @@ n = 11
 rates_list = [[rates[i][0] for i in range(len(rates))]]
 for j in range(n):
     rates_list.append([rates[i][1][j] for i in range(len(rates))])
-print(rates_list[0][0], rates_list[1][0])
+print(len(rates_list[0]))
+with open("rate.txt", "w") as f:
+    for i in range(len(rates_list[0])):
+        f.write("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}\n".format(rates_list[0][i], rates_list[1][i],
+                                                                             rates_list[2][i], rates_list[3][i],
+                                                                             rates_list[4][i], rates_list[5][i],
+                                                                             rates_list[6][i], rates_list[7][i],
+                                                                             rates_list[8][i], rates_list[9][i],
+                                                                             rates_list[10][i],
+                                                                             rates_list[11][i]))
 
 diff_list = [rates_list[0][:-2]]
 for j in range(1, n+1):
@@ -48,7 +57,7 @@ for j in range(1, n+1):
     std = np.std(diff_list[j])
     avg = np.average(diff_list[j])
     diff_norm_list.append([(diff_list[j][i] - avg) / std for i in range(len(diff_list[j]))])
-print(diff_norm_list[0][0], diff_norm_list[1][0])
+print(len(diff_norm_list[0]))
 
 with open("diff_norm.txt", "w") as f:
     for i in range(len(diff_norm_list[0])):
